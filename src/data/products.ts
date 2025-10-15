@@ -50,7 +50,7 @@ export const products: Product[] = [
     name: 'Câmera DSLR 4K',
     description: 'Câmera profissional com sensor full-frame, gravação 4K 60fps.',
     price: 4299.99,
-    image: 'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=500&h=500&fit=crop',
+    image: 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=500&h=500&fit=crop',
     category: 'Fotografia',
     stock: 15,
     rating: 4.9,
