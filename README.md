@@ -288,7 +288,7 @@ Contribuições são bem-vindas!
 
 MIT License - veja [LICENSE](LICENSE) para mais detalhes.
 
-## 👤 Autor
+## 👤 Davyd Willian
 
 Desenvolvido com ❤️ e ☕
 
