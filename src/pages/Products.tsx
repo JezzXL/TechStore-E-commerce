@@ -127,7 +127,6 @@ const Products = () => {
                 </select>
               </div>
 
-              {/* Clear Filters */}
               <button
                 onClick={() =>
                   setFilters({ category: 'all', minPrice: 0, maxPrice: 10000, sortBy: 'name' })
@@ -141,7 +140,6 @@ const Products = () => {
 
           {/* Main Content */}
           <div className="flex-1">
-            {/* Mobile Filter Toggle */}
             <button
               onClick={() => setShowFilters(!showFilters)}
               className="lg:hidden mb-4 flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
@@ -150,7 +148,7 @@ const Products = () => {
               Filtros
             </button>
 
-            {/* Mobile Filters Modal */}
+            
             {showFilters && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -173,7 +171,7 @@ const Products = () => {
                     </button>
                   </div>
 
-                  {/* Same filters as desktop */}
+                  
                   <div className="space-y-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

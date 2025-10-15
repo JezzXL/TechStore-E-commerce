@@ -19,7 +19,6 @@ const Header = ({ theme, toggleTheme }: HeaderProps) => {
     <header className="fixed top-0 w-full bg-white dark:bg-gray-900 shadow-md z-50 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <ShoppingCart className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             <span className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -27,7 +26,6 @@ const Header = ({ theme, toggleTheme }: HeaderProps) => {
             </span>
           </Link>
 
-          {/* Search Bar - Desktop */}
           <div className="hidden md:flex flex-1 max-w-xl mx-8">
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -41,7 +39,6 @@ const Header = ({ theme, toggleTheme }: HeaderProps) => {
             </div>
           </div>
 
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
             <Link
               to="/products"
