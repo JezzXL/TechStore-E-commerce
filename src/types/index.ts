@@ -47,3 +47,10 @@ export interface FilterOptions {
   maxPrice: number;
   sortBy: 'name' | 'price-asc' | 'price-desc' | 'rating';
 }
+
+export interface FavoritesStore {
+  favorites: Product[];
+  toggleFavorite: (product: number) => void;
+  isFavorite: (productId: number) => boolean;
+  getFavoritesCount: () => Product[];
+}
