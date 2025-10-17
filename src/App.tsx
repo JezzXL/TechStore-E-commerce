@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Products from './pages/Products';
 import Cart from './pages/Cart';
 import Favorites from './pages/Favorites';
+import Login from './pages/Login';
 
 const Footer = () => (
   <footer className="bg-gray-900 text-white py-12">
@@ -83,6 +84,7 @@ function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/favorites" element={<Favorites />} />
+          <Route path="/login" element={<Login />} />
         </Routes>
         
         <Footer />
