@@ -4,15 +4,18 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Product } from '../types';
 import { useCartStore } from '../stores/useCartStore';
+import { useFavoritesStore } from '../stores/useFavoritesStore';
 
 interface ProductCardProps {
   product: Product;
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
-  const [isFavorite, setIsFavorite] = useState(false);
   const [showAddedMessage, setShowAddedMessage] = useState(false);
   const { addToCart } = useCartStore();
+  const { toggleFavorite, isFavorite } = useFavoritesStore();
+
+  const isFav = isFavorite(product.id);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -23,7 +26,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
   const handleToggleFavorite = (e: React.MouseEvent) => {
     e.preventDefault();
-    setIsFavorite(!isFavorite);
+    toggleFavorite(product.id);
   };
 
   return (
@@ -35,6 +38,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
     >
       <Link to={`/product/${product.id}`}>
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700">
+          {/* Image */}
           <div className="relative h-64 overflow-hidden group">
             <img
               src={product.image}
@@ -43,19 +47,21 @@ const ProductCard = ({ product }: ProductCardProps) => {
               loading="lazy"
             />
             
+            {/* Favorite Button */}
             <button
               onClick={handleToggleFavorite}
               className="absolute top-3 right-3 p-2 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:scale-110 transition-transform"
             >
               <Heart
                 className={`w-5 h-5 ${
-                  isFavorite
+                  isFav
                     ? 'fill-red-500 text-red-500'
                     : 'text-gray-600 dark:text-gray-400'
                 }`}
               />
             </button>
 
+            {/* Stock Badge */}
             {product.stock < 10 && (
               <div className="absolute top-3 left-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
                 Últimas {product.stock} unidades!
@@ -63,15 +69,19 @@ const ProductCard = ({ product }: ProductCardProps) => {
             )}
           </div>
 
+          {/* Content */}
           <div className="p-5">
+            {/* Category */}
             <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
               {product.category}
             </span>
 
+            {/* Name */}
             <h3 className="mt-2 text-lg font-semibold text-gray-900 dark:text-white line-clamp-2 min-h-[3.5rem]">
               {product.name}
             </h3>
 
+            {/* Rating */}
             <div className="mt-2 flex items-center gap-2">
               <div className="flex items-center">
                 {[...Array(5)].map((_, i) => (
@@ -90,10 +100,12 @@ const ProductCard = ({ product }: ProductCardProps) => {
               </span>
             </div>
 
+            {/* Description */}
             <p className="mt-3 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
               {product.description}
             </p>
 
+            {/* Price and Actions */}
             <div className="mt-4 flex items-center justify-between">
               <div>
                 <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
@@ -113,6 +125,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
               </button>
             </div>
 
+            {/* Added to Cart Message */}
             {showAddedMessage && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
