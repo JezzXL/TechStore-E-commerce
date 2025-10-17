@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Menu, X, Search, User, Moon, Sun } from 'lucide-react';
+import { ShoppingCart, Menu, X, Search, User, Moon, Sun, Heart } from 'lucide-react';
 import { useCartStore } from '../stores/useCartStore';
+import { useFavoritesStore } from '../stores/useFavoritesStore';
 
 interface HeaderProps {
   theme: 'light' | 'dark';
@@ -12,13 +13,16 @@ const Header = ({ theme, toggleTheme }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { getCartItemsCount, user } = useCartStore();
+  const { favorites } = useFavoritesStore();
 
   const cartItemsCount = getCartItemsCount();
+  const favoritesCount = favorites.length;
 
   return (
     <header className="fixed top-0 w-full bg-white dark:bg-gray-900 shadow-md z-50 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
+          {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <ShoppingCart className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             <span className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -26,6 +30,7 @@ const Header = ({ theme, toggleTheme }: HeaderProps) => {
             </span>
           </Link>
 
+          {/* Search Bar - Desktop */}
           <div className="hidden md:flex flex-1 max-w-xl mx-8">
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -39,6 +44,7 @@ const Header = ({ theme, toggleTheme }: HeaderProps) => {
             </div>
           </div>
 
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
             <Link
               to="/products"
@@ -47,10 +53,10 @@ const Header = ({ theme, toggleTheme }: HeaderProps) => {
               Produtos
             </Link>
             <Link
-              to="/categories"
+              to="/favorites"
               className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
             >
-              Categorias
+              Favoritos
             </Link>
             
             {/* Theme Toggle */}
@@ -72,6 +78,16 @@ const Header = ({ theme, toggleTheme }: HeaderProps) => {
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
               <User className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+            </Link>
+
+            {/* Favorites */}
+            <Link to="/favorites" className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+              <Heart className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+              {favoritesCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {favoritesCount}
+                </span>
+              )}
             </Link>
 
             {/* Cart */}
@@ -123,11 +139,11 @@ const Header = ({ theme, toggleTheme }: HeaderProps) => {
               Produtos
             </Link>
             <Link
-              to="/categories"
+              to="/favorites"
               onClick={() => setIsMenuOpen(false)}
               className="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
             >
-              Categorias
+              Favoritos ({favoritesCount})
             </Link>
             <Link
               to="/cart"
