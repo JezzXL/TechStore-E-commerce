@@ -265,7 +265,7 @@ npm run build
 Features planejadas:
 - [ ] Página de detalhes do produto
 - [ ] Sistema de checkout completo
-- [ ] Autenticação de usuário
+- [✔] Autenticação de usuário
 - [ ] Painel administrativo
 - [ ] Integração com API real
 - [ ] Sistema de pagamento (Stripe/PayPal)
@@ -273,6 +273,8 @@ Features planejadas:
 - [ ] Wishlist persistente
 - [ ] Histórico de pedidos
 - [ ] Notificações
+- [✔] Sistema de favoritos
+- [ ] Perfil de usuário
 
 ## 🤝 Contribuindo
 
