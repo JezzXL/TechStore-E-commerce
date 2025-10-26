@@ -13,33 +13,62 @@ interface CartStore {
   setUser: (user: User | null) => void;
 }
 
+// Função para carregar o carrinho do localStorage
+const loadCartFromStorage = (): CartItem[] => {
+  if (typeof window === 'undefined') return [];
+  
+  try {
+    const savedCart = localStorage.getItem('cart-storage');
+    if (savedCart) {
+      const { cart } = JSON.parse(savedCart);
+      return Array.isArray(cart) ? cart : [];
+    }
+  } catch (error) {
+    console.error('Erro ao carregar carrinho:', error);
+  }
+  return [];
+};
+
+// Função para salvar o carrinho no localStorage
+const saveCartToStorage = (cart: CartItem[]) => {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    localStorage.setItem('cart-storage', JSON.stringify({ cart }));
+  } catch (error) {
+    console.error('Erro ao salvar carrinho:', error);
+  }
+};
+
 export const useCartStore = create<CartStore>((set, get) => ({
-  cart: [],
+  cart: loadCartFromStorage(),
   user: null,
 
   addToCart: (product) => {
-    const cart = get().cart;
+    const cart = get().cart || [];
     const existingItem = cart.find((item) => item.product.id === product.id);
 
+    let newCart: CartItem[];
+    
     if (existingItem) {
-      set({
-        cart: cart.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        ),
-      });
+      newCart = cart.map((item) =>
+        item.product.id === product.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
     } else {
-      set({ cart: [...cart, { product, quantity: 1 }] });
+      newCart = [...cart, { product, quantity: 1 }];
     }
 
-    // Salva no localStorage manualmente
-    localStorage.setItem('cart-storage', JSON.stringify({ cart: get().cart }));
+    set({ cart: newCart });
+    saveCartToStorage(newCart);
   },
 
   removeFromCart: (productId) => {
-    set({ cart: get().cart.filter((item) => item.product.id !== productId) });
-    localStorage.setItem('cart-storage', JSON.stringify({ cart: get().cart }));
+    const cart = get().cart || [];
+    const newCart = cart.filter((item) => item.product.id !== productId);
+    set({ cart: newCart });
+    saveCartToStorage(newCart);
   },
 
   updateQuantity: (productId, quantity) => {
@@ -48,44 +77,34 @@ export const useCartStore = create<CartStore>((set, get) => ({
       return;
     }
 
-    set({
-      cart: get().cart.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item
-      ),
-    });
-    localStorage.setItem('cart-storage', JSON.stringify({ cart: get().cart }));
+    const cart = get().cart || [];
+    const newCart = cart.map((item) =>
+      item.product.id === productId ? { ...item, quantity } : item
+    );
+    
+    set({ cart: newCart });
+    saveCartToStorage(newCart);
   },
 
   clearCart: () => {
     set({ cart: [] });
-    localStorage.setItem('cart-storage', JSON.stringify({ cart: [] }));
+    saveCartToStorage([]);
   },
 
   getCartTotal: () => {
-    return get().cart.reduce(
+    const cart = get().cart || [];
+    return cart.reduce(
       (total, item) => total + item.product.price * item.quantity,
       0
     );
   },
 
   getCartItemsCount: () => {
-    return get().cart.reduce((count, item) => count + item.quantity, 0);
+    const cart = get().cart || [];
+    return cart.reduce((count, item) => count + item.quantity, 0);
   },
 
   setUser: (user) => {
     set({ user });
   },
 }));
-
-// Carrega do localStorage ao iniciar
-if (typeof window !== 'undefined') {
-  const savedCart = localStorage.getItem('cart-storage');
-  if (savedCart) {
-    try {
-      const { cart } = JSON.parse(savedCart);
-      useCartStore.setState({ cart });
-    } catch (error) {
-      console.error('Erro ao carregar carrinho:', error);
-    }
-  }
-}

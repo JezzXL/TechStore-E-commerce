@@ -9,43 +9,60 @@ interface FavoritesStore {
   getFavoriteProducts: () => Product[];
 }
 
+// Função para carregar favoritos do localStorage
+const loadFavoritesFromStorage = (): number[] => {
+  if (typeof window === 'undefined') return [];
+  
+  try {
+    const savedFavorites = localStorage.getItem('favorites-storage');
+    if (savedFavorites) {
+      const { favorites } = JSON.parse(savedFavorites);
+      return Array.isArray(favorites) ? favorites : [];
+    }
+  } catch (error) {
+    console.error('Erro ao carregar favoritos:', error);
+  }
+  return [];
+};
+
+// Função para salvar favoritos no localStorage
+const saveFavoritesToStorage = (favorites: number[]) => {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    localStorage.setItem('favorites-storage', JSON.stringify({ favorites }));
+  } catch (error) {
+    console.error('Erro ao salvar favoritos:', error);
+  }
+};
+
 export const useFavoritesStore = create<FavoritesStore>((set, get) => ({
-  favorites: [],
+  favorites: loadFavoritesFromStorage(),
 
   toggleFavorite: (productId) => {
-    const favorites = get().favorites;
+    const favorites = get().favorites || [];
+    
+    let newFavorites: number[];
     
     if (favorites.includes(productId)) {
       // Remove dos favoritos
-      set({ favorites: favorites.filter((id) => id !== productId) });
+      newFavorites = favorites.filter((id) => id !== productId);
     } else {
       // Adiciona aos favoritos
-      set({ favorites: [...favorites, productId] });
+      newFavorites = [...favorites, productId];
     }
 
-    // Salva no localStorage
-    localStorage.setItem('favorites-storage', JSON.stringify({ favorites: get().favorites }));
+    set({ favorites: newFavorites });
+    saveFavoritesToStorage(newFavorites);
   },
 
   isFavorite: (productId) => {
-    return get().favorites.includes(productId);
+    const favorites = get().favorites || [];
+    return favorites.includes(productId);
   },
 
   getFavoriteProducts: () => {
-    const favoriteIds = get().favorites;
+    const favoriteIds = get().favorites || [];
     return products.filter((product) => favoriteIds.includes(product.id));
   },
 }));
-
-// Carrega favoritos do localStorage ao iniciar
-if (typeof window !== 'undefined') {
-  const savedFavorites = localStorage.getItem('favorites-storage');
-  if (savedFavorites) {
-    try {
-      const { favorites } = JSON.parse(savedFavorites);
-      useFavoritesStore.setState({ favorites });
-    } catch (error) {
-      console.error('Erro ao carregar favoritos:', error);
-    }
-  }
-}
