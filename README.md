@@ -9,7 +9,7 @@
 
 **E-commerce moderno e completo de tecnologia com React, TypeScript e Tailwind CSS 4**
 
-[Demo ao Vivo](#) • [Reportar Bug](../../issues) • [Solicitar Feature](../../issues)
+[Ver Demo](https://tech-store-e-commerce-blue.vercel.app/) • [Reportar Bug](../../issues) • [Solicitar Feature](../../issues)
 
 </div>
 
@@ -343,6 +343,26 @@ npm run build
 npm install -g gh-pages
 gh-pages -d dist
 ```
+
+## 📸 Screenshots
+
+### Home
+![Home](./screenshots/home.png)
+
+### Login
+![Login](./screenshots/login.png)
+
+### Favoritos
+![Favoritos](./screenshots/favoritos.png)
+
+### Carrinho
+![Carrinho](./screenshots/carrinho.png)
+
+### Categorias
+![Categorias](./screenshots/categorias.png)
+
+
+---
 
 ## 📈 Roadmap
 
