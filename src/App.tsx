@@ -7,6 +7,8 @@ import Categories from './pages/Categories';
 import Cart from './pages/Cart';
 import Favorites from './pages/Favorites';
 import Login from './pages/Login';
+import Checkout from './pages/Checkout';
+import OrderSuccess from './pages/OrderSuccess';
 
 const Footer = () => (
   <footer className="bg-gray-900 text-white py-12">
@@ -57,22 +59,28 @@ function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
+    // Carrega tema salvo ou usa preferência do sistema
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-    } else {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setTheme(prefersDark ? 'dark' : 'light');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+    setTheme(initialTheme);
+    
+    if (initialTheme === 'dark') {
+      document.documentElement.classList.add('dark');
     }
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem('theme', theme);
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-  }, [theme]);
-
   const toggleTheme = () => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   };
 
   return (
@@ -80,15 +88,19 @@ function App() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
         <Header theme={theme} toggleTheme={toggleTheme} />
         
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/favorites" element={<Favorites />} />
-          <Route path="/login" element={<Login />} />
-        </Routes>
-        
+        <main>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/favorites" element={<Favorites />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/order-success" element={<OrderSuccess />} />
+          </Routes>
+        </main>
+
         <Footer />
       </div>
     </Router>
