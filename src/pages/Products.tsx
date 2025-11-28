@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Filter, X, Search } from 'lucide-react';
+import { SlidersHorizontal, X, Search } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import { products } from '../data/products';
 import type { FilterOptions } from '../types';
@@ -10,7 +10,6 @@ const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
   
-  // Obtém os parâmetros da URL
   const urlSearch = searchParams.get('search') || '';
   const urlCategory = searchParams.get('category') || 'all';
   
@@ -23,7 +22,6 @@ const Products = () => {
   
   const [searchQuery, setSearchQuery] = useState(urlSearch);
 
-  // Atualiza filtros quando a URL muda
   useEffect(() => {
     const newCategory = searchParams.get('category') || 'all';
     const newSearch = searchParams.get('search') || '';
@@ -36,24 +34,20 @@ const Products = () => {
 
   const filteredProducts = useMemo(() => {
     const filtered = products.filter((product) => {
-      // Filtro de busca
       const matchesSearch = !searchQuery || 
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.category.toLowerCase().includes(searchQuery.toLowerCase());
 
-      // Filtro de categoria
       const matchesCategory =
         filters.category === 'all' || product.category === filters.category;
       
-      // Filtro de preço
       const matchesPrice =
         product.price >= filters.minPrice && product.price <= filters.maxPrice;
 
       return matchesSearch && matchesCategory && matchesPrice;
     });
 
-    // Ordenação
     switch (filters.sortBy) {
       case 'price-asc':
         return [...filtered].sort((a, b) => a.price - b.price);
@@ -74,111 +68,79 @@ const Products = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24 pb-12 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white pt-20 pb-16">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-            {searchQuery ? `Resultados para "${searchQuery}"` : 'Nossos Produtos'}
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            {filteredProducts.length} {filteredProducts.length === 1 ? 'produto encontrado' : 'produtos encontrados'}
-          </p>
+        <div className="py-8 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              {searchQuery ? (
+                <>
+                  <h1 className="text-3xl font-bold text-gray-900">
+                    Resultados para "{searchQuery}"
+                  </h1>
+                  <p className="text-gray-600 mt-2">
+                    {filteredProducts.length} {filteredProducts.length === 1 ? 'produto encontrado' : 'produtos encontrados'}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h1 className="text-3xl font-bold text-gray-900">
+                    Todos os Produtos
+                  </h1>
+                  <p className="text-gray-600 mt-2">
+                    {filteredProducts.length} produtos disponíveis
+                  </p>
+                </>
+              )}
+            </div>
+
+            {/* Mobile Filter Button */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="lg:hidden flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium"
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+              Filtros
+            </button>
+          </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex gap-8 mt-8">
           {/* Filters Sidebar - Desktop */}
           <aside className="hidden lg:block w-64 flex-shrink-0">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sticky top-24">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Filtros
-              </h2>
-
-              {/* Search Filter */}
+            <div className="sticky top-24 space-y-6">
+              {/* Active Search Filter */}
               {searchQuery && (
-                <div className="mb-6 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                  <div className="flex items-center justify-between">
+                <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
+                  <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <Search className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                      <span className="text-sm text-blue-600 dark:text-blue-400 font-medium truncate">
-                        {searchQuery}
-                      </span>
+                      <Search className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-900">Busca ativa</span>
                     </div>
                     <button
                       onClick={() => {
                         setSearchQuery('');
                         setSearchParams({});
                       }}
-                      className="text-blue-600 dark:text-blue-400 hover:text-blue-700"
+                      className="text-blue-600 hover:text-blue-700"
                     >
                       <X className="w-4 h-4" />
                     </button>
                   </div>
+                  <p className="text-sm text-blue-700 truncate">"{searchQuery}"</p>
                 </div>
               )}
 
-              {/* Category Filter */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Categoria
-                </label>
-                <select
-                  value={filters.category}
-                  onChange={(e) => {
-                    setFilters({ ...filters, category: e.target.value });
-                    if (e.target.value === 'all') {
-                      searchParams.delete('category');
-                    } else {
-                      searchParams.set('category', e.target.value);
-                    }
-                    setSearchParams(searchParams);
-                  }}
-                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                >
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat === 'all' ? 'Todas' : cat}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Price Range */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Faixa de Preço
-                </label>
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-xs text-gray-600 dark:text-gray-400">Mínimo</label>
-                    <input
-                      type="number"
-                      value={filters.minPrice}
-                      onChange={(e) => setFilters({ ...filters, minPrice: Number(e.target.value) })}
-                      className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-gray-600 dark:text-gray-400">Máximo</label>
-                    <input
-                      type="number"
-                      value={filters.maxPrice}
-                      onChange={(e) => setFilters({ ...filters, maxPrice: Number(e.target.value) })}
-                      className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    />
-                  </div>
-                </div>
-              </div>
-
               {/* Sort */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-3">
                   Ordenar por
                 </label>
                 <select
                   value={filters.sortBy}
                   onChange={(e) => setFilters({ ...filters, sortBy: e.target.value as FilterOptions['sortBy'] })}
-                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:bg-white focus:border-gray-300"
                 >
                   <option value="name">Nome</option>
                   <option value="price-asc">Menor Preço</option>
@@ -187,9 +149,69 @@ const Products = () => {
                 </select>
               </div>
 
+              {/* Category Filter */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-3">
+                  Categoria
+                </label>
+                <div className="space-y-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => {
+                        setFilters({ ...filters, category: cat });
+                        if (cat === 'all') {
+                          searchParams.delete('category');
+                        } else {
+                          searchParams.set('category', cat);
+                        }
+                        setSearchParams(searchParams);
+                      }}
+                      className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                        filters.category === cat
+                          ? 'bg-gray-900 text-white'
+                          : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      {cat === 'all' ? 'Todas as Categorias' : cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Price Range */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 mb-3">
+                  Faixa de Preço
+                </label>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">Mínimo</label>
+                    <input
+                      type="number"
+                      value={filters.minPrice}
+                      onChange={(e) => setFilters({ ...filters, minPrice: Number(e.target.value) })}
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:bg-white focus:border-gray-300"
+                      placeholder="R$ 0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">Máximo</label>
+                    <input
+                      type="number"
+                      value={filters.maxPrice}
+                      onChange={(e) => setFilters({ ...filters, maxPrice: Number(e.target.value) })}
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:bg-white focus:border-gray-300"
+                      placeholder="R$ 10000"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Clear Filters */}
               <button
                 onClick={handleClearFilters}
-                className="w-full py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                className="w-full py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
               >
                 Limpar Filtros
               </button>
@@ -198,14 +220,6 @@ const Products = () => {
 
           {/* Main Content */}
           <div className="flex-1">
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="lg:hidden mb-4 flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
-            >
-              <Filter className="w-5 h-5" />
-              Filtros
-            </button>
-
             {/* Mobile Filters Modal */}
             {showFilters && (
               <motion.div
@@ -215,46 +229,28 @@ const Products = () => {
                 onClick={() => setShowFilters(false)}
               >
                 <motion.div
-                  initial={{ x: -300 }}
+                  initial={{ x: '100%' }}
                   animate={{ x: 0 }}
-                  className="w-80 h-full bg-white dark:bg-gray-800 p-6 overflow-y-auto"
+                  className="absolute right-0 top-0 bottom-0 w-80 bg-white p-6 overflow-y-auto"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      Filtros
-                    </h2>
+                    <h2 className="text-lg font-bold text-gray-900">Filtros</h2>
                     <button onClick={() => setShowFilters(false)}>
-                      <X className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+                      <X className="w-6 h-6 text-gray-600" />
                     </button>
                   </div>
 
                   <div className="space-y-6">
+                    {/* Mobile Sort */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Categoria
-                      </label>
-                      <select
-                        value={filters.category}
-                        onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700"
-                      >
-                        {categories.map((cat) => (
-                          <option key={cat} value={cat}>
-                            {cat === 'all' ? 'Todas' : cat}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      <label className="block text-sm font-semibold text-gray-900 mb-3">
                         Ordenar por
                       </label>
                       <select
                         value={filters.sortBy}
                         onChange={(e) => setFilters({ ...filters, sortBy: e.target.value as FilterOptions['sortBy'] })}
-                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700"
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm"
                       >
                         <option value="name">Nome</option>
                         <option value="price-asc">Menor Preço</option>
@@ -262,6 +258,35 @@ const Products = () => {
                         <option value="rating">Melhor Avaliação</option>
                       </select>
                     </div>
+
+                    {/* Mobile Categories */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-900 mb-3">
+                        Categoria
+                      </label>
+                      <div className="space-y-2">
+                        {categories.map((cat) => (
+                          <button
+                            key={cat}
+                            onClick={() => setFilters({ ...filters, category: cat })}
+                            className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium ${
+                              filters.category === cat
+                                ? 'bg-gray-900 text-white'
+                                : 'bg-gray-50 text-gray-700'
+                            }`}
+                          >
+                            {cat === 'all' ? 'Todas' : cat}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleClearFilters}
+                      className="w-full py-2.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium"
+                    >
+                      Limpar Filtros
+                    </button>
                   </div>
                 </motion.div>
               </motion.div>
@@ -269,23 +294,23 @@ const Products = () => {
 
             {/* Products Grid */}
             {filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filteredProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <Search className="w-24 h-24 mx-auto text-gray-400 dark:text-gray-600 mb-4" />
-                <p className="text-gray-600 dark:text-gray-400 text-lg mb-2">
+              <div className="text-center py-20">
+                <Search className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   Nenhum produto encontrado
-                </p>
-                <p className="text-gray-500 dark:text-gray-500 text-sm mb-6">
+                </h3>
+                <p className="text-gray-600 mb-6">
                   Tente ajustar os filtros ou fazer uma nova busca
                 </p>
                 <button
                   onClick={handleClearFilters}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="px-6 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
                 >
                   Limpar Filtros
                 </button>
