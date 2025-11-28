@@ -1,7 +1,5 @@
-// src/pages/Cart.tsx
-
 import { motion } from 'framer-motion';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Package, Truck, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCartStore } from '../stores/useCartStore';
 
@@ -14,21 +12,23 @@ const Cart = () => {
 
   if (cart.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24 pb-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gray-50 pt-20 pb-16">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center py-20">
-            <ShoppingBag className="w-24 h-24 mx-auto text-gray-400 dark:text-gray-600 mb-4" />
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            <div className="inline-flex items-center justify-center w-24 h-24 bg-gray-100 rounded-full mb-6">
+              <ShoppingBag className="w-12 h-12 text-gray-400" />
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900 mb-3">
               Seu carrinho está vazio
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-8">
-              Adicione produtos para começar suas compras
+            <p className="text-gray-600 mb-8 max-w-md mx-auto">
+              Explore nossa seleção de produtos e adicione itens ao seu carrinho
             </p>
             <Link
               to="/products"
-              className="inline-flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center gap-2 px-8 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
             >
-              Ver Produtos
+              Explorar Produtos
               <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
@@ -38,13 +38,19 @@ const Cart = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24 pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-8">
-          Carrinho de Compras
-        </h1>
+    <div className="min-h-screen bg-gray-50 pt-20 pb-16">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="py-8 border-b border-gray-200">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Carrinho de Compras
+          </h1>
+          <p className="text-gray-600 mt-2">
+            {cart.length} {cart.length === 1 ? 'item' : 'itens'} no carrinho
+          </p>
+        </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-8 mt-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {cart.map((item) => (
@@ -53,129 +59,172 @@ const Cart = () => {
                 layout
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex gap-6"
+                exit={{ opacity: 0, x: -100 }}
+                className="bg-white rounded-xl p-6 border border-gray-200"
               >
-                <img
-                  src={item.product.image}
-                  alt={item.product.name}
-                  className="w-32 h-32 object-cover rounded-lg"
-                />
-
-                <div className="flex-1">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {item.product.name}
-                      </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {item.product.category}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => removeFromCart(item.product.id)}
-                      className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
+                <div className="flex gap-6">
+                  {/* Product Image */}
+                  <div className="flex-shrink-0 w-32 h-32 bg-gray-50 rounded-lg overflow-hidden">
+                    <img
+                      src={item.product.image}
+                      alt={item.product.name}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
 
-                  <div className="flex items-center justify-between mt-4">
-                    <div className="flex items-center gap-3">
+                  {/* Product Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex-1 min-w-0 pr-4">
+                        <h3 className="text-base font-semibold text-gray-900 mb-1">
+                          {item.product.name}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {item.product.category}
+                        </p>
+                      </div>
                       <button
-                        onClick={() => updateQuantity(item.product.id, Math.max(1, item.quantity - 1))}
-                        disabled={item.quantity <= 1}
-                        className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        onClick={() => removeFromCart(item.product.id)}
+                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                        aria-label="Remover item"
                       >
-                        <Minus className="w-4 h-4 text-gray-700 dark:text-gray-300" />
-                      </button>
-                      <span className="text-lg font-semibold text-gray-900 dark:text-white w-8 text-center">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                        className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                      >
-                        <Plus className="w-4 h-4 text-gray-700 dark:text-gray-300" />
+                        <Trash2 className="w-5 h-5" />
                       </button>
                     </div>
 
-                    <div className="text-right">
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        R$ {item.product.price.toFixed(2)} cada
-                      </p>
-                      <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                        R$ {(item.product.price * item.quantity).toFixed(2)}
-                      </p>
+                    <div className="flex items-center justify-between mt-4">
+                      {/* Quantity Controls */}
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => updateQuantity(item.product.id, Math.max(1, item.quantity - 1))}
+                          disabled={item.quantity <= 1}
+                          className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <Minus className="w-4 h-4 text-gray-600" />
+                        </button>
+                        <span className="text-base font-semibold text-gray-900 min-w-[2rem] text-center">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                          disabled={item.quantity >= item.product.stock}
+                          className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <Plus className="w-4 h-4 text-gray-600" />
+                        </button>
+                      </div>
+
+                      {/* Price */}
+                      <div className="text-right">
+                        <p className="text-sm text-gray-500 mb-1">
+                          R$ {item.product.price.toFixed(2)} cada
+                        </p>
+                        <p className="text-xl font-bold text-gray-900">
+                          R$ {(item.product.price * item.quantity).toFixed(2)}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </motion.div>
             ))}
+
+            {/* Continue Shopping */}
+            <Link
+              to="/products"
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium mt-6 transition-colors"
+            >
+              <ArrowRight className="w-4 h-4 rotate-180" />
+              Continuar Comprando
+            </Link>
           </div>
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sticky top-24">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                Resumo do Pedido
-              </h2>
+            <div className="bg-white rounded-xl border border-gray-200 sticky top-24">
+              {/* Summary Header */}
+              <div className="p-6 border-b border-gray-200">
+                <h2 className="text-lg font-bold text-gray-900">
+                  Resumo do Pedido
+                </h2>
+              </div>
 
-              <div className="space-y-4 mb-6">
-                <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                  <span>Subtotal ({cart.length} {cart.length === 1 ? 'item' : 'itens'})</span>
-                  <span>R$ {total.toFixed(2)}</span>
+              {/* Summary Content */}
+              <div className="p-6 space-y-4">
+                <div className="flex justify-between text-gray-600">
+                  <span>Subtotal</span>
+                  <span className="font-semibold text-gray-900">
+                    R$ {total.toFixed(2)}
+                  </span>
                 </div>
                 
-                <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                <div className="flex justify-between text-gray-600">
                   <span>Frete</span>
-                  <span className={shipping === 0 ? 'text-green-600 dark:text-green-400 font-semibold' : ''}>
+                  <span className={`font-semibold ${shipping === 0 ? 'text-green-600' : 'text-gray-900'}`}>
                     {shipping === 0 ? 'Grátis' : `R$ ${shipping.toFixed(2)}`}
                   </span>
                 </div>
 
+                {/* Free Shipping Progress */}
                 {total < 500 && (
-                  <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                    <p className="text-sm text-blue-800 dark:text-blue-200">
-                      Faltam <strong>R$ {(500 - total).toFixed(2)}</strong> para frete grátis!
-                    </p>
+                  <div className="pt-4 border-t border-gray-200">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Truck className="w-4 h-4 text-blue-600" />
+                      <p className="text-sm text-gray-600">
+                        Faltam <strong className="text-gray-900">R$ {(500 - total).toFixed(2)}</strong> para frete grátis
+                      </p>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${Math.min((total / 500) * 100, 100)}%` }}
+                      ></div>
+                    </div>
                   </div>
                 )}
 
-                <div className="border-t border-gray-200 dark:border-gray-700 pt-4 flex justify-between text-lg font-bold text-gray-900 dark:text-white">
-                  <span>Total</span>
-                  <span>R$ {finalTotal.toFixed(2)}</span>
+                <div className="pt-4 border-t border-gray-200 flex justify-between">
+                  <span className="text-lg font-bold text-gray-900">Total</span>
+                  <span className="text-2xl font-bold text-gray-900">
+                    R$ {finalTotal.toFixed(2)}
+                  </span>
                 </div>
+
+                <p className="text-xs text-gray-500 text-center">
+                  ou 12x de R$ {(finalTotal / 12).toFixed(2)} sem juros
+                </p>
               </div>
 
-              <Link
-                to="/checkout"
-                className="w-full flex items-center justify-center gap-2 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold shadow-lg hover:shadow-xl mb-3"
-              >
-                Finalizar Compra
-                <ArrowRight className="w-5 h-5" />
-              </Link>
+              {/* Actions */}
+              <div className="p-6 border-t border-gray-200 space-y-3">
+                <Link
+                  to="/checkout"
+                  className="flex items-center justify-center gap-2 w-full py-3.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-semibold"
+                >
+                  Finalizar Compra
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
 
-              <Link
-                to="/products"
-                className="w-full block text-center py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-semibold"
-              >
-                Continuar Comprando
-              </Link>
-
-              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                  <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span>Compra 100% Segura</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mt-2">
-                  <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
-                    <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z" />
-                  </svg>
-                  <span>Entrega Rápida</span>
+                {/* Trust Badges */}
+                <div className="pt-4 space-y-3">
+                  <div className="flex items-center gap-3 text-sm text-gray-600">
+                    <div className="flex-shrink-0 w-8 h-8 bg-green-50 rounded-full flex items-center justify-center">
+                      <Shield className="w-4 h-4 text-green-600" />
+                    </div>
+                    <span>Compra 100% Segura</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-gray-600">
+                    <div className="flex-shrink-0 w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center">
+                      <Package className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <span>Entrega Rápida</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-gray-600">
+                    <div className="flex-shrink-0 w-8 h-8 bg-purple-50 rounded-full flex items-center justify-center">
+                      <Truck className="w-4 h-4 text-purple-600" />
+                    </div>
+                    <span>Frete Grátis acima de R$ 500</span>
+                  </div>
                 </div>
               </div>
             </div>
